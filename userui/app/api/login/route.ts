@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     if (isAPIError(error)) {
-      state.message = "There was an error logging in";
+      state.message = "Error logging in, check your password";
     } else {
-      state.message = "There was an unknown error logging in";
+      state.message = "Unknown error logging in";
     }
     console.error(error);
     return Response.json(state, { status: 500 });

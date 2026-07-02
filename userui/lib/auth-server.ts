@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import environment from "../../shared/src/environment.ts";
+import { nextCookies } from "better-auth/next-js";
 
 const { DOMAIN, DB_URL } = environment();
 const database = new Pool({
@@ -8,6 +9,7 @@ const database = new Pool({
 });
 const authServer = betterAuth({
   appName: "Wildman Stack Auth",
+  plugins: [nextCookies()],
   database,
   trustedOrigins: [`https://${DOMAIN}`],
   baseURL: `https://${DOMAIN}/api/auth`,

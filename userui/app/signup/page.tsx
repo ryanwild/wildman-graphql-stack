@@ -37,6 +37,7 @@ export default function SignUp() {
       });
       if (response.ok) {
         router.push("/dashboard");
+        router.refresh();
       }
       const responseState = await response.json();
       setState(responseState);

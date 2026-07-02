@@ -39,7 +39,8 @@ const LogIn = () => {
         credentials: "include",
       });
       if (response.ok) {
-        router.push("/dashboard");
+        router.push("/dashboard", { scroll: true });
+        router.refresh();
       }
       const responseState = await response.json();
       setState(responseState);
