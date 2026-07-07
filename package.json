@@ -1,15 +1,15 @@
 {
   "author": "Ryan Wild",
   "bugs": {
-    "url": "https://github.com/ryanwild/wildman-graphql-stack/issues"
+    "url": "https://github.com/ryanwild/wildman-stack/issues"
   },
   "description": "",
-  "homepage": "https://github.com/ryanwild/wildman-graphql-stack#readme",
+  "homepage": "https://github.com/ryanwild/wildman-stack#readme",
   "license": "MIT",
-  "name": "wildman-graphql-stack",
+  "name": "Wildman Stack",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryanwild/wildman-graphql-stack.git"
+    "url": "git+https://github.com/ryanwild/wildman-stack.git"
   },
   "scripts": {
     "test": "echo \"Warning: no test specified\" && exit 0"

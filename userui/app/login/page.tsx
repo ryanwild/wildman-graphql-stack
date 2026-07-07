@@ -8,15 +8,30 @@ import {
   Container,
   Flex,
   Heading,
-  TextField,
   Text,
+  TextField,
 } from "@radix-ui/themes";
-import Link from "next/link";
 import { Label } from "radix-ui";
-import { useState, SyntheticEvent } from "react";
-import InputError from "../_components/InputError/index";
-import { LoginFormState } from "../api/login/route";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SyntheticEvent, useState } from "react";
+import { authClient } from "../../lib/auth-client";
+import { validateLogin } from "../../lib/validation";
+import InputError from "../_components/InputError/index";
+import { CheckBox } from "../_components/CheckBox/index";
+
+export type LoginFormState = {
+  message?: string;
+  data?: {
+    email?: string;
+    password?: string;
+    rememberMe?: boolean;
+  };
+  validation?: {
+    email?: string[];
+    password?: string[];
+  };
+};
 
 const initialState: LoginFormState = {};
 
@@ -30,25 +45,39 @@ const LogIn = () => {
   async function onSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    try {
-      const formData = new FormData(event.currentTarget);
-      const body = JSON.stringify(Object.fromEntries(formData));
-      const response = await fetch("/api/login", {
-        method: "POST",
-        body,
-        credentials: "include",
-      });
-      if (response.ok) {
-        router.push("/dashboard", { scroll: true });
-        router.refresh();
-      }
-      const responseState = await response.json();
-      setState(responseState);
-    } catch (error) {
-      console.error(error);
-    } finally {
+    const nextState: LoginFormState = {};
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      email: (formData.get("email") as string) ?? "",
+      password: (formData.get("password") as string) ?? "",
+      rememberMe: Boolean(formData.get("rememberMe")),
+    };
+    const [valid, validationErrors] = validateLogin(data);
+
+    if (!valid) {
+      nextState.validation = validationErrors as LoginFormState["validation"];
+      nextState.message = "Could not log you in";
+      setState(nextState);
       setIsLoading(false);
+      return;
     }
+
+    await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      rememberMe: data.rememberMe,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/dashboard");
+          router.refresh();
+        },
+        onError: () => {
+          nextState.message = "There was a problem logging in";
+        },
+      },
+    });
+    setState(nextState);
+    setIsLoading(false);
   }
   return (
     <Container size="4" maxWidth="400px" pt="8">
@@ -80,6 +109,7 @@ const LogIn = () => {
             defaultValue={state.data?.password}
           />
           <InputError inputError={state?.validation?.password} />
+          <CheckBox label="Remember me" defaultChecked name="rememberMe" />
           <Box width="100%" pt="2">
             <Button type="submit" loading={isLoading}>
               <LockOpen1Icon /> Log In

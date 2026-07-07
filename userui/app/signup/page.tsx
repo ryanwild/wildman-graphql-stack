@@ -13,8 +13,23 @@ import {
 import { useRouter } from "next/navigation";
 import { Label } from "radix-ui";
 import { SyntheticEvent, useState } from "react";
+import { authClient } from "../../lib/auth-client";
+import { validateUser } from "../../lib/validation";
 import InputError from "../_components/InputError/index";
-import { SignUpFormState } from "../api/signup/route";
+
+export type SignUpFormState = {
+  message?: string;
+  data?: {
+    fullname?: string;
+    email?: string;
+    password?: string;
+  };
+  validation?: {
+    fullname?: string[];
+    email?: string[];
+    password?: string[];
+  };
+};
 
 const initialState: SignUpFormState = {};
 
@@ -27,25 +42,39 @@ export default function SignUp() {
   async function onSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    try {
-      const formData = new FormData(event.currentTarget);
-      const body = JSON.stringify(Object.fromEntries(formData));
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        body,
-        credentials: "include",
-      });
-      if (response.ok) {
-        router.push("/dashboard");
-        router.refresh();
-      }
-      const responseState = await response.json();
-      setState(responseState);
-    } catch (error) {
-      console.error(error);
-    } finally {
+    const nextState: SignUpFormState = {};
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      email: (formData.get("email") as string) ?? "",
+      password: (formData.get("password") as string) ?? "",
+      fullname: (formData.get("fullname") as string) ?? "",
+    };
+    const [valid, validationErrors] = validateUser(data);
+
+    if (!valid) {
+      nextState.validation = validationErrors as SignUpFormState["validation"];
+      nextState.message = "Could not sign you up";
+      setState(nextState);
       setIsLoading(false);
+      return;
     }
+
+    await authClient.signUp.email({
+      email: data.email,
+      password: data.password,
+      name: data.fullname,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/dashboard");
+          router.refresh();
+        },
+        onError: () => {
+          nextState.message = "There was a problem signing up";
+        },
+      },
+    });
+    setState(nextState);
+    setIsLoading(false);
   }
 
   return (

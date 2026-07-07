@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@better-auth/oauth-provider": "1.6.22",
     "@radix-ui/react-icons": "1.3.2",
     "@radix-ui/themes": "3.3.0",
     "better-auth": "1.6.22",
@@ -28,7 +27,7 @@
     "dev": "next dev",
     "lint": "eslint",
     "start": "next start",
-    "migrate": "npx --yes auth@1.6.11 migrate --config=lib/auth-server.ts --yes",
+    "migrate": "npx --yes auth@1.6.22 migrate --config=lib/auth-server.ts --yes",
     "test": "echo \"Warning: no test specified\" && exit 0",
     "tsc-check": "tsc --noEmit true",
     "tsc-prod": "tsc --project tsconfig.prod.json"
