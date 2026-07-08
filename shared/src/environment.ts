@@ -4,9 +4,8 @@ import * as v from "valibot";
 import { memoize } from "./memoize.ts";
 
 const EnvironmentSchema = v.object({
-  AUTH_JWT_EXPIRATION_MINUTES: v.pipe(v.string(), v.toNumber()),
-  AUTH_JWT_SECRET: v.string(),
-  AUTH_LOG_LEVEL: v.string(),
+  BETTER_AUTH_SECRET: v.string(),
+  BETTER_AUTH_URL: v.string(),
   BACKEND_DEBUG: v.pipe(v.string(), v.toBoolean()),
   BACKEND_LOG_LEVEL: v.string(),
   DB_HOST: v.string(),

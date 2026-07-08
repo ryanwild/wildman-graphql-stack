@@ -1,11 +1,26 @@
-import { integer, pgSchema, varchar } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgSchema,
+  varchar,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import environment from "../../../shared/src/environment.ts";
 
 const { DB_NAME } = environment();
 export const dbSchema = pgSchema(DB_NAME);
-export const usersTable = dbSchema.table("users", {
+
+export const blogTable = dbSchema.table("blog", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
-  passwordHash: varchar({ length: 255 }).notNull(),
+  title: varchar({ length: 255 }).notNull(),
+  slug: varchar({ length: 255 }).notNull().unique(),
+  updatedAt: timestamp()
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  createdAt: timestamp()
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  content: text(),
 });

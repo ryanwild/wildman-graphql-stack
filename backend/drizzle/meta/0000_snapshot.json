@@ -1,11 +1,11 @@
 {
-  "id": "5ba48dfb-af10-4e6a-9b86-eac50602ea21",
+  "id": "50e1ffdf-98b7-4093-9bf1-b82789085f21",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "wildmanstack.users": {
-      "name": "users",
+    "wildmanstack.blog": {
+      "name": "blog",
       "schema": "wildmanstack",
       "columns": {
         "id": {
@@ -15,7 +15,7 @@
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "users_id_seq",
+            "name": "blog_id_seq",
             "schema": "wildmanstack",
             "increment": "1",
             "startWith": "1",
@@ -25,34 +25,48 @@
             "cycle": false
           }
         },
-        "name": {
-          "name": "name",
+        "title": {
+          "name": "title",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "email": {
-          "name": "email",
+        "slug": {
+          "name": "slug",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "password_hash": {
-          "name": "password_hash",
-          "type": "varchar(255)",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_email_unique": {
-          "name": "users_email_unique",
+        "blog_slug_unique": {
+          "name": "blog_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "email"
+            "slug"
           ]
         }
       },

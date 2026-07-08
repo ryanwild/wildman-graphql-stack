@@ -1,4 +1,10 @@
 import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
+import {
+  createInlineSigningKeyProvider,
+  extractFromCookie,
+  useJWT,
+} from "@graphql-yoga/plugin-jwt";
+import { useCookies } from "@whatwg-node/server-plugin-cookies";
 import { createYoga, useReadinessCheck } from "graphql-yoga";
 import { createServer } from "node:http";
 import { promisify } from "node:util";
@@ -6,10 +12,12 @@ import environment from "../../shared/src/environment.ts";
 import { databaseAvailable } from "./db/query.ts";
 import { schema } from "./schema.ts";
 
-const { BACKEND_DEBUG } = environment();
+const { BACKEND_DEBUG, BETTER_AUTH_SECRET, BETTER_AUTH_URL } = environment();
+const signingKey = BETTER_AUTH_SECRET;
 
 const yoga = createYoga({
   schema,
+  logging: true,
   // cors: { origin: BACKEND_CORS_ORIGINS, credentials: true, methods: ['GET', 'POST'] },
   healthCheckEndpoint: "/health",
   landingPage: false,
@@ -27,13 +35,32 @@ const yoga = createYoga({
         try {
           await databaseAvailable();
           // if true, respond with 200 OK
-          return false;
+          return true;
         } catch (err) {
           // log the error on the server for debugging purposes
           console.error(err);
           // if false, respond with 503 Service Unavailable and no body
           return false;
         }
+      },
+    }),
+    useCookies(),
+    useJWT({
+      signingKeyProviders: [createInlineSigningKeyProvider(signingKey)],
+      tokenLookupLocations: [
+        extractFromCookie({ name: "__Secure-better-auth.session_data" }),
+      ],
+      tokenVerification: {
+        // file a bug with Better-Auth, the issuer and audience are
+        // not set on the JWT token payload
+        //issuer: BETTER_AUTH_URL,
+        // audience: "web",
+        algorithms: ["HS256"],
+      },
+      extendContext: true,
+      reject: {
+        missingToken: true,
+        invalidToken: true,
       },
     }),
   ],
