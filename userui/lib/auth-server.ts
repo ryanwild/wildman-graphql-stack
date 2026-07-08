@@ -11,6 +11,8 @@ const database = new Pool({
   connectionString: DB_URL,
 });
 
+const serverUrl = `https://${DOMAIN}`;
+
 const authServer = betterAuth({
   ...config,
   advanced: {
@@ -38,10 +40,12 @@ const authServer = betterAuth({
     minPasswordLength: 12,
     requireEmailVerification: false,
   },
+  disabledPaths: ["/token"],
   plugins: [
     jwt({
+      disableSettingJwtHeader: true,
       jwt: {
-        issuer: "https://wildmanstack.localhost",
+        issuer: serverUrl,
         audience: "web",
         expirationTime: "15m",
       },
@@ -55,8 +59,8 @@ const authServer = betterAuth({
     nextCookies(),
   ],
   database,
-  trustedOrigins: [`https://${DOMAIN}`],
-  baseURL: `https://${DOMAIN}/api/auth`,
+  trustedOrigins: [serverUrl],
+  baseURL: `${serverUrl}/api/auth`,
 });
 
 export { authServer };
