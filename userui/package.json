@@ -2,14 +2,16 @@
   "dependencies": {
     "@radix-ui/react-icons": "1.3.2",
     "@radix-ui/themes": "3.3.0",
-    "better-auth": "1.6.22",
+    "@urql/exchange-auth": "3.0.0",
+    "better-auth": "1.6.23",
     "next": "16.2.6",
     "next-themes": "0.4.6",
     "pg": "8.20.0",
     "radix-ui": "1.4.3",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "tsx": "4.22.4"
+    "tsx": "4.22.4",
+    "urql": "5.0.3"
   },
   "devDependencies": {
     "@types/node": "25.6.2",
@@ -27,7 +29,7 @@
     "dev": "next dev",
     "lint": "eslint",
     "start": "next start",
-    "migrate": "npx --yes auth@1.6.22 migrate --config=lib/auth-server.ts --yes",
+    "migrate": "npx --yes auth@1.6.23 migrate --config=lib/auth-server.ts --yes",
     "test": "echo \"Warning: no test specified\" && exit 0",
     "tsc-check": "tsc --noEmit true",
     "tsc-prod": "tsc --project tsconfig.prod.json"

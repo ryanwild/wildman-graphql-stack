@@ -87,6 +87,10 @@ services:
           path: ./userui/next.config.ts
           target: /workspace/userui/app/next.config.ts
           initial_sync: true
+        - action: sync+restart
+          path: ./.env
+          target: /workspace/userui/app/.env
+          initial_sync: true
         - action: rebuild
           path: ./userui/package.json
     networks:

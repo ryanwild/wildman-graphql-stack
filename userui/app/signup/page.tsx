@@ -67,6 +67,7 @@ export default function SignUp() {
         onSuccess: () => {
           router.push("/dashboard");
           router.refresh();
+          return;
         },
         onError: () => {
           nextState.message = "There was a problem signing up";

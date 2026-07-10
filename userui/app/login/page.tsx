@@ -70,6 +70,7 @@ const LogIn = () => {
         onSuccess: () => {
           router.push("/dashboard");
           router.refresh();
+          return;
         },
         onError: () => {
           nextState.message = "There was a problem logging in";

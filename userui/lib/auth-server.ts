@@ -1,10 +1,9 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, BetterAuthPlugin } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { jwt } from "better-auth/plugins";
 import { Pool } from "pg";
 import environment from "../../shared/src/environment.ts";
 import { config } from "./auth-shared.ts";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, jwt, bearer } from "better-auth/plugins";
 
 const { DOMAIN, DB_URL } = environment();
 const database = new Pool({
@@ -12,27 +11,58 @@ const database = new Pool({
 });
 
 const serverUrl = `https://${DOMAIN}`;
+const plugins = [];
+// the order of the plugins array matters
+plugins.push(
+  jwt({
+    disableSettingJwtHeader: false,
+    jwt: {
+      issuer: serverUrl,
+      audience: "web",
+      expirationTime: "15m", // access_token expiration
+      definePayload: (_session) => {
+        return {
+          iss: serverUrl,
+          aud: "web",
+        };
+      },
+      getSubject: (session) => {
+        return session.user.id;
+      },
+    },
+    jwks: {
+      disablePrivateKeyEncryption: false,
+      keyPairConfig: {
+        alg: "ES512",
+      },
+    },
+  }),
+);
+if (process.env.NODE_ENV === "development") {
+  plugins.push(openAPI());
+}
+plugins.push(nextCookies());
 
 const authServer = betterAuth({
   ...config,
   advanced: {
     useSecureCookies: true,
+    defaultCookieAttributes: {
+      sameSite: "Strict",
+    },
   },
   session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
     cookieCache: {
+      version: "1", // Change the version to invalidate all sessions
       enabled: true,
-      strategy: "jwt",
+      strategy: "jwe",
       maxAge: 120, // 2 minutes
-      refreshCache: {
-        updateAge: 60, // Refresh when 60 seconds remain before expiry
-      },
     },
   },
   account: {
-    encryptOAuthTokens: false,
-    accountLinking: {
-      trustedProviders: ["email-password"],
-    },
+    encryptOAuthTokens: true,
     storeStateStrategy: "database",
   },
   emailAndPassword: {
@@ -41,23 +71,7 @@ const authServer = betterAuth({
     requireEmailVerification: false,
   },
   disabledPaths: ["/token"],
-  plugins: [
-    jwt({
-      disableSettingJwtHeader: true,
-      jwt: {
-        issuer: serverUrl,
-        audience: "web",
-        expirationTime: "15m",
-      },
-      jwks: {
-        keyPairConfig: {
-          alg: "ES512",
-        },
-      },
-    }),
-    openAPI(),
-    nextCookies(),
-  ],
+  plugins,
   database,
   trustedOrigins: [serverUrl],
   baseURL: `${serverUrl}/api/auth`,
