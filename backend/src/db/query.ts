@@ -13,4 +13,3 @@ const databaseAvailable = async (): Promise<boolean> => {
 };
 
 export { databaseAvailable };
-

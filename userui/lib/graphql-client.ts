@@ -1,9 +1,11 @@
+"use client";
+
 import { Client, cacheExchange, fetchExchange } from "urql";
 import { authExchange, AuthUtilities } from "@urql/exchange-auth";
 import { authClient } from "./auth-client";
 
 const auth = authExchange(async (utils: AuthUtilities) => {
-  let token = sessionStorage.getItem("token");
+  let token: string;
   return {
     addAuthToOperation(operation) {
       if (!token) return operation;
@@ -15,41 +17,31 @@ const auth = authExchange(async (utils: AuthUtilities) => {
       console.log(error);
       return false;
     },
+    willAuthError() {
+      if (typeof token === "undefined") {
+        return true;
+      }
+      // we should validate the token here
+      return false;
+    },
     async refreshAuth() {
       const accessToken = await authClient.token();
+      console.log("accessToken", accessToken);
       if (!accessToken.data || accessToken.error) {
-        sessionStorage.clear();
-        await authClient.signOut();
+        // this logic needs to be reviewed
+        // await authClient.signOut();
         return;
       }
       token = accessToken.data.token;
-      /*
-      if we have a session,
-        then fetch a token
-        
-        if there was no errors
-        update the token variable and return
-
-
-      Otherwise clear storage and logout
-      */
     },
   };
 });
 
-const client = new Client({
+const graphqlClient = new Client({
   url: "/graphql",
   exchanges: [cacheExchange, auth, fetchExchange],
-  // fetchOptions: () => {
-  //   const token = sessionStorage.getItem("token");
-  //   if (token) {
-  //     return {
-  //       headers: { authorization: `Bearer ${token}` },
-  //     };
-  //   }
-  //   return {};
-  // },
 });
 
-export { client };
-export default client;
+export { Provider as GraphQLProvider } from "urql";
+export { graphqlClient };
+export default graphqlClient;

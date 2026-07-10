@@ -27,12 +27,15 @@ services:
       target: $COMPOSE_TARGET
       context: .
       dockerfile: ./backend/Dockerfile
-    restart: no
+    restart: unless-stopped
     env_file: .env
     ports:
       - "127.0.0.1:3000:80"
       - "127.0.0.1:9229:9229" # Debugging port
+    environment:
+      - NODE_EXTRA_CA_CERTS=/cert/root.crt
     volumes:
+      - ./cert/:/cert/
       - ./backend/drizzle/:/workspace/backend/drizzle
     develop:
       watch:

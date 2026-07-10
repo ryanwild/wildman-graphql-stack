@@ -1,9 +1,9 @@
-import { betterAuth, BetterAuthPlugin } from "better-auth";
+import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
+import { jwt, openAPI } from "better-auth/plugins";
 import { Pool } from "pg";
 import environment from "../../shared/src/environment.ts";
 import { config } from "./auth-shared.ts";
-import { openAPI, jwt, bearer } from "better-auth/plugins";
 
 const { DOMAIN, DB_URL } = environment();
 const database = new Pool({
@@ -15,12 +15,12 @@ const plugins = [];
 // the order of the plugins array matters
 plugins.push(
   jwt({
-    disableSettingJwtHeader: false,
+    disableSettingJwtHeader: true,
     jwt: {
       issuer: serverUrl,
       audience: "web",
       expirationTime: "15m", // access_token expiration
-      definePayload: (_session) => {
+      definePayload: () => {
         return {
           iss: serverUrl,
           aud: "web",
@@ -70,7 +70,6 @@ const authServer = betterAuth({
     minPasswordLength: 12,
     requireEmailVerification: false,
   },
-  disabledPaths: ["/token"],
   plugins,
   database,
   trustedOrigins: [serverUrl],
