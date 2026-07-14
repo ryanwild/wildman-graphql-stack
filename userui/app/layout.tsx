@@ -10,7 +10,6 @@ import { GlobalNavigation } from "./_components/GlobalNavigation/index";
 import { ThemeToggle } from "./_components/ThemeToggle";
 import GlobalPropsProvider from "./_context/global-props";
 import { sessionAvailable } from "./actions";
-import { graphqlClient, GraphQLProvider } from "../lib/graphql-client";
 
 const headingMono = IBM_Plex_Sans({
   variable: "--font-heading",
@@ -39,22 +38,20 @@ export default async function RootLayout({
               sessionAvailable: sessionCheck,
             }}
           >
-            <GraphQLProvider value={graphqlClient}>
-              <Theme
-                accentColor="cyan"
-                radius="medium"
-                scaling="110%"
-                hasBackground={false}
-              >
-                <Container p="6" size="4">
-                  <GlobalNavigation />
-                  <ThemeToggle className={styles.ThemeToggleButton} />
-                  <main>
-                    <Container p="6">{children}</Container>
-                  </main>
-                </Container>
-              </Theme>
-            </GraphQLProvider>
+            <Theme
+              accentColor="cyan"
+              radius="medium"
+              scaling="110%"
+              hasBackground={false}
+            >
+              <Container p="6" size="4">
+                <GlobalNavigation />
+                <ThemeToggle className={styles.ThemeToggleButton} />
+                <main>
+                  <Container p="6">{children}</Container>
+                </main>
+              </Container>
+            </Theme>
           </GlobalPropsProvider>
         </ThemeProvider>
       </body>

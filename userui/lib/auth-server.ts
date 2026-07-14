@@ -15,7 +15,7 @@ const plugins = [];
 // the order of the plugins array matters
 plugins.push(
   jwt({
-    disableSettingJwtHeader: true,
+    disableSettingJwtHeader: false,
     jwt: {
       issuer: serverUrl,
       audience: "web",
@@ -54,12 +54,6 @@ const authServer = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
-    cookieCache: {
-      version: "1", // Change the version to invalidate all sessions
-      enabled: true,
-      strategy: "jwe",
-      maxAge: 120, // 2 minutes
-    },
   },
   account: {
     encryptOAuthTokens: true,

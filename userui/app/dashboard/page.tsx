@@ -1,12 +1,18 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { useSession } from "../../lib/auth-client";
-import { gql, useQuery } from "urql";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { graphQLClient } from "../../lib/graphql-client";
+import { logout } from "../../lib/logout";
+import { Heading, Text, Box, Button } from "@radix-ui/themes";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-const SystemInfoQuery = gql`
+const SYSTEM_INFO = gql`
   {
     SystemInfo {
       ready
@@ -16,39 +22,56 @@ const SystemInfoQuery = gql`
 `;
 
 const Page = () => {
-  const { data, isPending, error } = useSession();
-  const [result, reexecuteQuery] = useQuery({
-    query: SystemInfoQuery,
+  const {
+    loading: loadingSystemInfo,
+    error: systemInfoError,
+    data: systemInfoData,
+    refetch: refetchSystemInfo,
+  } = useQuery(SYSTEM_INFO, {
+    client: graphQLClient,
   });
 
-  const { data: systemInfo, fetching, error: gqlError } = result;
+  const {
+    data: sessionData,
+    isPending: loadingSession,
+    error: sessionError,
+    refetch: refetchSession,
+  } = useSession();
 
-  if (!isPending && (error || !data)) {
-    return redirect("/login");
+  if (!loadingSession && (sessionError || !sessionData)) {
+    logout();
   }
-  if (!fetching && gqlError) {
+
+  if (!loadingSystemInfo && (systemInfoError || !systemInfoData)) {
     return (
-      <div>
-        There was a problem fetching SystemInfo{" "}
-        <button onClick={reexecuteQuery}>Retry</button>
-      </div>
+      <>
+        <h1>Error</h1>
+        <div>System info not loaded</div>
+        <Button
+          onClick={() => {
+            refetchSession();
+            refetchSystemInfo();
+          }}
+        >
+          Reload <ReloadIcon />
+        </Button>
+      </>
     );
   }
+
+  if (loadingSystemInfo || loadingSession) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div>
-      {isPending || fetching ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <div>
-            <h4>Session:</h4>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-            <h4>System Info:</h4>
-            <pre>{JSON.stringify(systemInfo, null, 2)}</pre>
-          </div>
-        </>
-      )}
-    </div>
+    <Box width="100%" pt="5">
+      <Text size="1">
+        <Heading size="4">Session:</Heading>
+        <pre>{JSON.stringify(sessionData, null, 2)}</pre>
+        <Heading size="4">System Info:</Heading>
+        <pre>{JSON.stringify(systemInfoData, null, 2)}</pre>
+      </Text>
+    </Box>
   );
 };
 
