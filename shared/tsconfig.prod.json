@@ -5,6 +5,8 @@
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "rewriteRelativeImportExtensions": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./dist"
   }
 }

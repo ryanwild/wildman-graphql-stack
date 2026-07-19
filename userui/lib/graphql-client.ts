@@ -1,4 +1,10 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  RefetchEventManager,
+  windowFocusSource,
+} from "@apollo/client";
 import { SetContextLink } from "@apollo/client/link/context";
 import { fetchToken } from "./token";
 
@@ -19,7 +25,13 @@ const httpLink = new HttpLink({
 
 const graphQLClient = new ApolloClient({
   link: authLink.concat(httpLink),
+  ssrMode: true,
   cache: new InMemoryCache(),
+  refetchEventManager: new RefetchEventManager({
+    sources: {
+      windowFocus: windowFocusSource,
+    },
+  }),
 });
 
 export { graphQLClient };

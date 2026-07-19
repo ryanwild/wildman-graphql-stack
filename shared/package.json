@@ -8,12 +8,18 @@
     "typescript": "6.0.3"
   },
   "license": "MIT",
-  "main": "src/index.ts",
-  "name": "shared",
+  "main": "dist/index.js",
+  "name": "@wildmanstack/shared",
   "scripts": {
     "test": "echo \"Warning: no test specified\"",
     "tsc-check": "tsc --noEmit true",
-    "tsc-prod": "tsc --project tsconfig.prod.json"
+    "build": "bash ./bin/clean && tsc --project tsconfig.prod.json"
+  },
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "type": "module",
   "version": "0.0.1"

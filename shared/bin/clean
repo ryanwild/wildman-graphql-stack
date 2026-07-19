@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+dist_path=$(realpath "$(dirname "$(realpath "$0")")/../dist")
+
+rm -rf $dist_path && mkdir -p $dist_path

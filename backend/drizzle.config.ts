@@ -1,5 +1,5 @@
 import { defineConfig } from "drizzle-kit";
-import environment from "../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 
 const { DB_USE_SSL, DB_URL } = environment();
 

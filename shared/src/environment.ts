@@ -22,7 +22,7 @@ export type Environment = v.InferOutput<typeof EnvironmentSchema> & {
   DB_URL: string;
 };
 
-const environment = (): Environment => {
+const environment = memoize((): Environment => {
   const envFilePath = new URL("../../.env", import.meta.url);
   if (fs.existsSync(envFilePath)) {
     loadEnvFile(envFilePath);
@@ -42,6 +42,6 @@ postgresql://alex:AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/dbna
     DB_URL: `postgresql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`,
   };
   return { ...env, ...generatedEnv };
-};
+});
 
-export default memoize(environment);
+export { environment };

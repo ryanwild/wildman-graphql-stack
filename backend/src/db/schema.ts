@@ -1,4 +1,4 @@
-import environment from "../../../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 import {
   integer,
   pgSchema,

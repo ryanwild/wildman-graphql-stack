@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { jwt, openAPI } from "better-auth/plugins";
 import { Pool } from "pg";
-import environment from "../../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 import { config } from "./auth-shared.ts";
 
 const { DOMAIN, DB_URL } = environment();

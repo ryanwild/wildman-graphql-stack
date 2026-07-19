@@ -45,12 +45,6 @@ services:
           initial_sync: true
           ignore:
             - node_modules/
-        - action: sync+restart
-          path: ./shared
-          target: /workspace/shared
-          initial_sync: true
-          ignore:
-            - node_modules/
         - action: rebuild
           path: ./backend/package.json
     networks:
@@ -80,12 +74,6 @@ services:
           path: ./userui/lib
           target: /workspace/userui/lib
           initial_sync: true
-        - action: sync
-          path: ./shared
-          target: /workspace/shared
-          initial_sync: true
-          ignore:
-            - node_modules/
         - action: sync+restart
           path: ./userui/next.config.ts
           target: /workspace/userui/app/next.config.ts

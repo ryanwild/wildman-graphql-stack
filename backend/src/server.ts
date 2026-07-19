@@ -7,7 +7,7 @@ import {
 import { createYoga, useReadinessCheck } from "graphql-yoga";
 import { createServer, Server } from "node:http";
 import { promisify } from "node:util";
-import environment from "../../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 import { databaseAvailable } from "./db/query.ts";
 import { schema } from "./schema.ts";
 

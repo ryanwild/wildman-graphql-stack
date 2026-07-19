@@ -24,3 +24,11 @@
 
 # Generated TLS Certificates
 /cert/**/*.*
+
+
+# We are going to keep the shared
+# code build artifacts in GH
+# this would make it easier to
+# start runnign with Docker
+!/shared/dist/**/*.*
+

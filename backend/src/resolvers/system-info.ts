@@ -1,4 +1,4 @@
-import environment from "../../../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 import { databaseAvailable } from "../db/query.ts";
 import type { AppContext } from "../schema-types.ts";
 

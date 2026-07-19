@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import environment from "../../../shared/src/environment.ts";
+import { environment } from "@wildmanstack/shared";
 import * as schema from "./schema.ts";
 
 const { DB_URL, BACKEND_DEBUG } = environment();
