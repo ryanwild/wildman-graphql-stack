@@ -10,5 +10,5 @@ A pre-configured dev environment with the following services:
 
 This project is in active development and changing often.
 
-You can explore the code base and get familiar but is not yet ready for
+You can explore the code base and get familiar, I am getting ready for
 production deployment.
