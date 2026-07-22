@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+docker compose up ingress --detach;
+docker compose cp ingress:/data/caddy/pki/authorities/local/root.crt ./cert/root.crt
+docker compose up --detach;
+docker compose exec -it --user=root userui sh -c "chown -R app:app /cert"
+docker compose exec -it --user=root backend sh -c "chown -R app:app /cert"

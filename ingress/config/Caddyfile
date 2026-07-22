@@ -1,7 +1,3 @@
-{
-  debug
-}
-
 127.0.0.1:80 {
 	handle_path /health {
 		respond "ok" 200
@@ -27,8 +23,18 @@
     }
   }
 
+  handle_path /public/* {
+    root * /srv/public
+    file_server
+  }
+  handle_path /_next/static/* {
+    root * /srv/.next/static
+    file_server
+  }
+
 	# Everything else should go to the frontend
 	handle {
+    encode gzip
 		reverse_proxy http://userui {
         # If the server set a cookie, forward it to the client
         @authCookie header Set-Cookie *

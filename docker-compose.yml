@@ -56,12 +56,14 @@ services:
       context: .
       dockerfile: ./userui/Dockerfile
     restart: unless-stopped
+    user: "${UID}:${GID}"
     env_file: .env
     environment:
       - NEXT_ALLOWED_DEV_ORIGIN=https://wildmanstack.localhost
       - NODE_EXTRA_CA_CERTS=/cert/root.crt
     volumes:
       - ./cert/:/cert/
+      - userui:/workspace/userui/.next/static
     ports:
       - "127.0.0.1:3002:80"
     develop:
@@ -103,12 +105,15 @@ services:
           path: ./ingress/config/Caddyfile
           target: /etc/caddy/Caddyfile
         - action: sync
+          path: ./userui/.next/static/
+          target: /srv/.next/static/
+        - action: sync
           path: ./userui/public/
-          target: /srv/
+          target: /srv/public/
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      - ./cert/:/data/caddy/pki/authorities/local/
+      - userui:/srv/.next/static
     depends_on:
       userui:
         condition: service_healthy
@@ -123,6 +128,7 @@ volumes:
   db:
   caddy_data:
   caddy_config:
+  userui:
 
 networks:
   wms:
