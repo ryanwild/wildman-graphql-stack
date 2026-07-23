@@ -32,10 +32,7 @@ services:
     ports:
       - "127.0.0.1:3000:80"
       - "127.0.0.1:9229:9229" # Debugging port
-    environment:
-      - NODE_EXTRA_CA_CERTS=/cert/root.crt
     volumes:
-      - ./cert/:/cert/
       - ./backend/drizzle/:/workspace/backend/drizzle
     develop:
       watch:
@@ -56,14 +53,12 @@ services:
       context: .
       dockerfile: ./userui/Dockerfile
     restart: unless-stopped
-    user: "${UID}:${GID}"
     env_file: .env
     environment:
       - NEXT_ALLOWED_DEV_ORIGIN=https://wildmanstack.localhost
-      - NODE_EXTRA_CA_CERTS=/cert/root.crt
     volumes:
-      - ./cert/:/cert/
       - userui:/workspace/userui/.next/static
+      - userui:/workspace/userui/public
     ports:
       - "127.0.0.1:3002:80"
     develop:
@@ -72,6 +67,9 @@ services:
           path: ./userui/app
           target: /workspace/userui/app
           initial_sync: true
+        - action: sync
+          path: ./userui/public/
+          target: /workspace/userui/public
         - action: sync
           path: ./userui/lib
           target: /workspace/userui/lib
@@ -104,16 +102,11 @@ services:
         - action: sync+restart
           path: ./ingress/config/Caddyfile
           target: /etc/caddy/Caddyfile
-        - action: sync
-          path: ./userui/.next/static/
-          target: /srv/.next/static/
-        - action: sync
-          path: ./userui/public/
-          target: /srv/public/
     volumes:
       - caddy_data:/data
       - caddy_config:/config
       - userui:/srv/.next/static
+      - userui:/srv/public/
     depends_on:
       userui:
         condition: service_healthy

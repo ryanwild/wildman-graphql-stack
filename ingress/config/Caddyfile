@@ -23,10 +23,6 @@
     }
   }
 
-  handle_path /public/* {
-    root * /srv/public
-    file_server
-  }
   handle_path /_next/static/* {
     root * /srv/.next/static
     file_server
@@ -35,6 +31,9 @@
 	# Everything else should go to the frontend
 	handle {
     encode gzip
+    root * /srv/public
+    rewrite @try_files {http.matchers.file.relative}
+    file_server
 		reverse_proxy http://userui {
         # If the server set a cookie, forward it to the client
         @authCookie header Set-Cookie *

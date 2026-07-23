@@ -9,12 +9,15 @@ ENV GROUPNAME=$USER
 ENV UID=1001
 ENV GID=2002
 ENV NPM_CONFIG_CACHE=/workspace/.npm
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 RUN addgroup --system --gid "$GID" "$GROUPNAME" && \
   adduser --system --disabled-password --gecos "" --home "$(pwd)" --ingroup "$GROUPNAME" --no-create-home --uid "$UID" "$USER"
-RUN npm install -g npm@12.0.1
-RUN mkdir -p /workspace/.npm && chown -R ${USER}:${GROUPNAME} "/workspace/.npm"
-RUN mkdir -p /cert && chown -R ${USER}:${GROUPNAME} /cert
-VOLUME /cert
+RUN npm install -g npm@12.0.1 && \
+  mkdir -p /workspace/.npm && \
+  chown -R ${USER}:${GROUPNAME} "/workspace/.npm"
+RUN apk --no-cache add ca-certificates=20260611-r0
+COPY --chown=${USER}:${GROUPNAME} ./tls-cert/root.crt /usr/local/share/ca-certificates/ingress.crt
+RUN update-ca-certificates
 HEALTHCHECK --interval=30s --timeout=30s --start-period=90s --retries=3 \
   CMD wget --no-verbose --tries=1 -qO- http://0.0.0.0/health || exit 1
 

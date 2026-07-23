@@ -23,7 +23,7 @@
 **/*.tsbuildinfo
 
 # Generated TLS Certificates
-/cert/**/*.*
+/tls-cert/**/*.*
 
 
 # We are going to keep the shared
